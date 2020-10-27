@@ -1,0 +1,102 @@
+version: '3.5'
+
+services:
+  app:
+    container_name: mdcim_api
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    volumes:
+      - "./app:/app"   
+    expose:
+      - 5001  
+    ports:
+      - "5001:5001"
+    stdin_open: true
+    tty: true
+
+  mdc-influxdb:
+    image: mdc-influxdb:latest
+    build:
+      context: .
+      dockerfile: ./mdc/mdc-influxdb/Dockerfile
+    container_name: mdc-influxdb
+    restart: always
+    volumes:
+      - ./dhv/mdc-influxdb:/var/lib/influxdb
+    expose:
+      - 8086  # api
+    ports:
+      - "18086:8086"
+    command:
+      - influxd
+
+  mdc-mongodb:
+    image: mdc-mongodb:latest
+    build:
+      context: .
+      dockerfile: ./mdc/mdc-mongodb/Dockerfile
+    container_name: mdc-mongodb
+    restart: always
+    volumes:
+      - ./dhv/mdc-mongodb:/data/db
+    expose:
+      - 27018
+    ports:
+      - "27018:27017"
+
+#   redis:
+#     container_name: redis
+#     hostname: redis
+#     image: redis
+#     ports:
+#       - "6379:6379"
+#     restart: always
+
+#   redis-commander:
+#     container_name: redis-commander
+#     hostname: redis-commander
+#     image: rediscommander/redis-commander:latest
+#     restart: always
+#     environment:
+#       - REDIS_HOSTS=local:redis:6379
+#     ports:
+#       - "18081:8081"
+
+#   mdc-manager:
+#     image: mdc-manager:latest
+#     container_name: mdc-manager
+#     depends_on:
+#       - redis
+
+#   mdc-job-broker:
+#     image: mdc-job-broker:latest
+#     container_name: mdc-job-broker
+
+#   mdc-trap-receiver:
+#     image: mdc-trap-receiver:latest
+#     container_name: mdc-trap-receiver
+
+#   docker-socket-proxy:
+#     image: tecnativa/docker-socket-proxy
+#     environment:
+#       - AUTH=1
+#       - POST=1
+#       - SECRETS=1
+#       - IMAGES=1
+#       - SERVICES=1
+#       - TASKS=1
+#       - NODES=1
+#       - CONTAINERS=1
+#     ports:
+#       - "2375:2375/tcp"
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#     restart: always
+
+# networks:
+#   default:
+#     ipam:
+#       driver: default
+#       config:
+#       - subnet: 172.33.0.0/16

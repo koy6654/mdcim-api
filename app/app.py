@@ -60,6 +60,8 @@ def network():
 
     return redirect(url_for('index'))
 
+
+
 # @app.route('/register', methods=['GET', 'POST'])
 # @use_db
 # def register():

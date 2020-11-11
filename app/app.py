@@ -5,15 +5,15 @@ from pymongo import MongoClient
 from bson import json_util
 from bson.objectid import ObjectId
 
+import requests
+
 from functools import wraps
 
 import json
-# from JSONEncoder import JSONEncoder, MongoEngineJSONEncoder
 
 app = Flask(__name__)
 CORS(app)
 app.debug=True
-# app.json_encoder=MongoEngineJSONEncoder
 
 # sql과 비교
 # insert, insert_one, insert_many = insert
@@ -21,10 +21,7 @@ app.debug=True
 # delete = delete
 # update = update
 
-# localhost:5000에서 받아와서 3000에 표시해주는게 fetch
-# localhost:3000에서 클릭으로 5000으로 보내주는건 form 활용 (form의 action을 localhost:5000이 아닌 http://127.0.0.1:5000으로 해야할 것)
-
-def use_db(f):
+def use_mongo(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         client = MongoClient('mdc-mongodb',27017)
@@ -44,7 +41,7 @@ def index():
     return redirect("http://127.0.0.1:3000")
 
 @app.route('/devicesettings/network', methods=['GET', 'POST'])
-@use_db
+@use_mongo
 def network():
     network = db.network
     ipv4=request.form.get('ipv4')
@@ -55,11 +52,47 @@ def network():
     print("Subnetmask : "); print(subnetmask)
     print("Gateway : "); print(gateway)
 
-    # network.insert_one({"ipv4":ipv4, "subnetmask":subnetmask, "gateway":gateway})
-    network.update_one({"_id":ObjectId("5f8fc0c7862d12531bdc4751")}, {'$set':{"ipv4":ipv4, "subnetmask":subnetmask, "gateway":gateway}})
+    network.update_one({"_id":ObjectId("5fa395be4ca2273f77113fb1")}, {'$set':{"ipv4":ipv4, "subnetmask":subnetmask, "gateway":gateway}})
 
     return redirect(url_for('index'))
 
+@app.route('/devicesettings/modbusschedules', methods=['GET', 'POST'])
+# @use_mongo
+def modbus_schedules():
+    # modbus_schedules = db.modbus_schedules
+    res = requests.get('http://192.168.126.129:5000/schedules')
+    data = res.json()
+    return jsonify(data)
+
+@app.route('/devicesettings/modbusschedulesadd', methods=['POST'])
+@use_mongo
+def modbus_schedules_add():
+    modbus = db.modbus
+    code = request.form.get('modbus_code')
+    id = request.form.get('modbus_id')
+    host = request.form.get('modbus_host')
+    port = request.form.get('modbus_port')
+    interval = request.form.get('modbus_interval')
+    description = request.form.get('modbus_description')
+    key = request.form.get('modbus_template_key')
+    note = request.form.get('modbus_template_note')
+    type = request.form.get('modbus_template_type')
+
+    modbus.insert_one({"id":id, "host": host, "port": port, "interval":interval, "description": description, "type":type})
+
+    return 'Success'
+
+@app.route('/devicesettings/modbusschedulesedit', methods=['POST'])
+@use_mongo
+def modbus_schedules_edit():
+    modbus = db.modbus
+    key = request.form.get('modbus_template_edit_key')
+    note = request.form.get('modbus_template_edit_note')
+    type = request.form.get('modbus_template_edit_type')
+
+
+
+    return 'Success'
 
 
 # @app.route('/register', methods=['GET', 'POST'])

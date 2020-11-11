@@ -9,7 +9,7 @@ services:
     volumes:
       - "./app:/app"   
     expose:
-      - 5001  
+      - 5001
     ports:
       - "5001:5001"
     stdin_open: true
@@ -25,7 +25,7 @@ services:
     volumes:
       - ./dhv/mdc-influxdb:/var/lib/influxdb
     expose:
-      - 8086  # api
+      - 8086 
     ports:
       - "18086:8086"
     command:

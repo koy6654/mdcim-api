@@ -59,39 +59,57 @@ def network():
 @app.route('/devicesettings/modbusschedules', methods=['GET', 'POST'])
 # @use_mongo
 def modbus_schedules():
-    # modbus_schedules = db.modbus_schedules
+    # modbus = db.modbus
     res = requests.get('http://192.168.126.129:5000/schedules')
     data = res.json()
     return jsonify(data)
 
-@app.route('/devicesettings/modbusschedulesadd', methods=['POST'])
-@use_mongo
-def modbus_schedules_add():
-    modbus = db.modbus
-    code = request.form.get('modbus_code')
-    id = request.form.get('modbus_id')
-    host = request.form.get('modbus_host')
-    port = request.form.get('modbus_port')
-    interval = request.form.get('modbus_interval')
-    description = request.form.get('modbus_description')
-    key = request.form.get('modbus_template_key')
-    note = request.form.get('modbus_template_note')
-    type = request.form.get('modbus_template_type')
+# @app.route('/devicesettings/modbusschedulesadd', methods=['POST'])
+# @use_mongo
+# def modbus_schedules_add():
+#     modbus = db.modbus
+#     code = request.form.get('modbus_code')
+#     id = request.form.get('modbus_id')
+#     host = request.form.get('modbus_host')
+#     port = request.form.get('modbus_port')
+#     interval = request.form.get('modbus_interval')
+#     description = request.form.get('modbus_description')
+#     key = request.form.get('modbus_template_key')
+#     note = request.form.get('modbus_template_note')
+#     type = request.form.get('modbus_template_type')
 
-    modbus.insert_one({"id":id, "host": host, "port": port, "interval":interval, "description": description, "type":type})
+#     modbus.insert_one({"id":id, "host": host, "port": port, "interval":interval, "description": description, "type":type})
 
-    return 'Success'
+#     return 'Success'
+
+
+# @app.route('/devicesettings/modbusschedulesadd', methods=['POST'])
+# @use_mongo
+# def modbus_schedules_add():
+#     modbus = db.modbus
+#     ms = request.form.get('modbus_schedules_add')
+#     ms_json = json.loads(ms) 
+#     modbus.insert_one(ms_json)
+#     return 'Success'
+
 
 @app.route('/devicesettings/modbusschedulesedit', methods=['POST'])
 @use_mongo
 def modbus_schedules_edit():
+    # modbus = db.modbus
+    # ms = request.form.get('modbus_schedules_edit')
+    # ms_json = json.loads(ms)  
+    # modbus.insert_one(ms_json)
+
     modbus = db.modbus
-    key = request.form.get('modbus_template_edit_key')
-    note = request.form.get('modbus_template_edit_note')
-    type = request.form.get('modbus_template_edit_type')
-
-
-
+    ms = request.form.get('modbus_schedules_edit')
+    # ms_json = json.loads(ms) 
+    # print(type(ms)) 
+    # print(ms)
+    ms1=json.loads(ms)
+    print(type(ms1)) 
+    print(ms1) 
+    modbus.insert_many(ms1)
     return 'Success'
 
 
